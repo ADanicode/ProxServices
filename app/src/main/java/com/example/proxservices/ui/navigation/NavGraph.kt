@@ -22,42 +22,39 @@ import com.example.proxservices.ui.screen.welcome.WelcomeScreen
 @Composable
 fun AppNavGraph(navController: NavHostController) {
 
-    // --- Inyección de Dependencias Simple (Simulación) ---
-    // Creamos una única instancia de nuestro repositorio simulado
-    // y la Factory para el ViewModel
     val authRepository = SimulatedAuthRepository()
     val loginViewModelFactory = LoginViewModel.Factory(authRepository)
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Welcome.route // Empezamos en la pantalla de Bienvenida
+        startDestination = Screen.Welcome.route
     ) {
         composable(Screen.Welcome.route) {
             WelcomeScreen(navController = navController)
         }
 
         composable(Screen.Login.route) {
-            // Creamos el ViewModel y le pasamos la factory
+
             val loginViewModel: LoginViewModel = viewModel(factory = loginViewModelFactory)
             LoginScreen(navController = navController, viewModel = loginViewModel)
         }
 
         composable(Screen.RegisterClient.route) {
             RegisterClientScreen(navController = navController)
-            // TODO: Crear ViewModel para esta pantalla
+
         }
 
         composable(Screen.RegisterWorker.route) {
             RegisterWorkerScreen(navController = navController)
-            // TODO: Crear ViewModel para esta pantalla
+
         }
 
         composable(Screen.ForgotPassword.route) {
             ForgotPasswordScreen(navController = navController)
-            // TODO: Crear ViewModel para esta pantalla
+
         }
 
-        // --- Pantallas Futuras (Placeholders) ---
+
         composable(Screen.ClientDashboard.route) {
             PlaceholderScreen(text = "Client Dashboard")
         }

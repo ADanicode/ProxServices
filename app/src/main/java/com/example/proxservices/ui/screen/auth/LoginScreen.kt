@@ -1,14 +1,15 @@
 package com.example.proxservices.ui.screen.auth
-
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,11 +27,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.proxservices.R // <-- Asegúrate de tener un logo
+import com.example.proxservices.R
 import com.example.proxservices.ui.components.InfoTagsRow
 import com.example.proxservices.ui.navigation.Screen
 import com.example.proxservices.ui.theme.*
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
@@ -40,10 +40,9 @@ fun LoginScreen(
     val uiState = viewModel.uiState
     val context = LocalContext.current
     var passwordVisible by remember { mutableStateOf(false) }
-
-    // --- Lógica para manejar eventos ---
     LaunchedEffect(uiState.loginSuccess) {
         if (uiState.loginSuccess) {
+            // Navegamos al dashboard y limpiamos la pila de atrás
             navController.navigate(Screen.ClientDashboard.route) {
                 popUpTo(Screen.Welcome.route) { inclusive = true }
             }
@@ -98,7 +97,7 @@ fun LoginScreen(
             )
             Spacer(Modifier.height(32.dp))
 
-            // Campo de Correo Electrónico
+
             OutlinedTextField(
                 value = uiState.email,
                 onValueChange = viewModel::onEmailChange,
@@ -116,7 +115,7 @@ fun LoginScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            // Campo de Contraseña
+
             OutlinedTextField(
                 value = uiState.password,
                 onValueChange = viewModel::onPasswordChange,
@@ -125,11 +124,13 @@ fun LoginScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Lock,
-                        contentDescription = null,
-                        tint = TextGray // <-- ¡¡CORREGIDO!!
-                    )
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                            contentDescription = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña",
+                            tint = TextGray
+                        )
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
@@ -149,7 +150,11 @@ fun LoginScreen(
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier
                     .align(Alignment.End)
-                    .clickable { navController.navigate(Screen.ForgotPassword.route) }
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = { navController.navigate(Screen.ForgotPassword.route) }
+                    )
             )
 
             Spacer(Modifier.weight(1f)) // Espacio flexible
@@ -178,7 +183,11 @@ fun LoginScreen(
                     color = TextLink,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable { navController.navigate(Screen.RegisterClient.route) }
+                    modifier = Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = { navController.navigate(Screen.RegisterClient.route) }
+                    )
                 )
             }
 
@@ -187,3 +196,4 @@ fun LoginScreen(
         }
     }
 }
+

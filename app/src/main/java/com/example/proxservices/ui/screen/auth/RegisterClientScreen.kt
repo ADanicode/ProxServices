@@ -2,14 +2,13 @@ package com.example.proxservices.ui.screen.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,8 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proxservices.R
+import com.example.proxservices.ui.components.CustomAuthTextField // <-- USA EL COMPONENTE
 import com.example.proxservices.ui.components.InfoTagsRow
 import com.example.proxservices.ui.navigation.Screen
 import com.example.proxservices.ui.theme.*
@@ -34,11 +32,16 @@ import com.example.proxservices.ui.theme.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterClientScreen(navController: NavController) {
+    // Estado local para los campos
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
+
+    // Estado para la visibilidad de las contraseñas
+    var passwordVisible by remember { mutableStateOf(false) }
+    var confirmPasswordVisible by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -59,11 +62,11 @@ fun RegisterClientScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = 24.dp)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState()), // Para evitar que el teclado tape todo
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                painter = painterResource(id = R.drawable.ic_launcher_foreground), // CAMBIA ESTO por tu logo
                 contentDescription = "Logo",
                 modifier = Modifier.size(80.dp)
             )
@@ -84,6 +87,7 @@ fun RegisterClientScreen(navController: NavController) {
             )
             Spacer(Modifier.height(32.dp))
 
+            // --- Campos de Texto ---
             CustomAuthTextField(
                 value = fullName,
                 onValueChange = { fullName = it },
@@ -105,7 +109,9 @@ fun RegisterClientScreen(navController: NavController) {
                 label = "Contraseña",
                 placeholder = "Mínimo 8 caracteres",
                 keyboardType = KeyboardType.Password,
-                isPassword = true
+                isPassword = true,
+                passwordVisible = passwordVisible, // <-- Pasa el estado
+                onPasswordToggleClick = { passwordVisible = !passwordVisible } // <-- Pasa el evento
             )
             Spacer(Modifier.height(16.dp))
             CustomAuthTextField(
@@ -114,15 +120,22 @@ fun RegisterClientScreen(navController: NavController) {
                 label = "Confirmar Contraseña",
                 placeholder = "Repite tu contraseña",
                 keyboardType = KeyboardType.Password,
-                isPassword = true
+                isPassword = true,
+                passwordVisible = confirmPasswordVisible, // <-- Pasa el estado
+                onPasswordToggleClick = { confirmPasswordVisible = !confirmPasswordVisible } // <-- Pasa el evento
             )
 
-            Spacer(Modifier.weight(1f))
+            // --- CORRECCIÓN DE LAYOUT ---
+            // Reemplazamos el Spacer con "weight" por un Spacer fijo
+            Spacer(Modifier.height(32.dp))
 
             Button(
                 onClick = { /* TODO: Lógica de registro simulada */ },
-                modifier = Modifier.fillMaxWidth().height(56.dp).padding(top = 32.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryCyanLight),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                // Quitamos el .padding(top = 32.dp) que estaba aquí
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryCyanLight), // Color claro
                 shape = RoundedCornerShape(16.dp),
                 enabled = !isLoading
             ) {
@@ -139,7 +152,11 @@ fun RegisterClientScreen(navController: NavController) {
                     color = TextLink,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable { navController.navigate(Screen.Login.route) }
+                    modifier = Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null, // <-- ARREGLO DEL CRASH
+                        onClick = { navController.navigate(Screen.Login.route) }
+                    )
                 )
             }
 
@@ -149,33 +166,3 @@ fun RegisterClientScreen(navController: NavController) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun CustomAuthTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    placeholder: String,
-    keyboardType: KeyboardType = KeyboardType.Text,
-    isPassword: Boolean = false
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        placeholder = { Text(placeholder, color = TextGray) },
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
-        trailingIcon = {
-            if (isPassword) {
-                Icon(Icons.Default.Lock, contentDescription = null, tint = TextGray) // <-- ¡¡CORREGIDO!!
-            }
-        },
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            unfocusedBorderColor = CardBorder,
-            focusedBorderColor = PrimaryCyan
-        )
-    )
-}

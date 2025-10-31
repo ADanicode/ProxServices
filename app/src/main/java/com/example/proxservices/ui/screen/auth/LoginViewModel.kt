@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.proxservices.data.repository.AuthRepository
 import kotlinx.coroutines.launch
 
-// 1. Definimos el estado de la UI (lo que la pantalla ve)
 data class LoginUiState(
     val email: String = "",
     val password: String = "",
@@ -18,13 +17,11 @@ data class LoginUiState(
     val loginSuccess: Boolean = false
 )
 
-// 2. El ViewModel
+
 class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
     var uiState by mutableStateOf(LoginUiState())
         private set
-
-    // --- Eventos (Lo que la UI puede hacer) ---
     fun onEmailChange(email: String) {
         uiState = uiState.copy(email = email, errorMessage = null)
     }
@@ -40,7 +37,7 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
         viewModelScope.launch {
             val result = authRepository.login(uiState.email, uiState.password)
 
-            // Verificamos el resultado de la simulación
+
             result.fold(
                 onSuccess = {
                     uiState = uiState.copy(isLoading = false, loginSuccess = true)
@@ -55,8 +52,6 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
         }
     }
 
-    // --- Factory ---
-    // Esto es necesario para poder pasar el 'authRepository' al ViewModel
     class Factory(private val authRepository: AuthRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {

@@ -2,15 +2,14 @@ package com.example.proxservices.ui.screen.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,25 +18,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.proxservices.R
+import com.example.proxservices.ui.components.CustomAuthTextField // <-- USA EL COMPONENTE
 import com.example.proxservices.ui.navigation.Screen
 import com.example.proxservices.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterWorkerScreen(navController: NavController) {
+    // Estado local para los campos
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var profession by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
+
+    var passwordVisible by remember { mutableStateOf(false) }
+    var confirmPasswordVisible by remember { mutableStateOf(false) }
 
     // Para el Dropdown
     var professionExpanded by remember { mutableStateOf(false) }
@@ -63,7 +64,7 @@ fun RegisterWorkerScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = 24.dp)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState()), // Para evitar que el teclado tape todo
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
@@ -88,7 +89,7 @@ fun RegisterWorkerScreen(navController: NavController) {
             )
             Spacer(Modifier.height(32.dp))
 
-            // --- Campos de Texto ---
+
             CustomAuthTextField(
                 value = fullName,
                 onValueChange = { fullName = it },
@@ -110,7 +111,9 @@ fun RegisterWorkerScreen(navController: NavController) {
                 label = "Contraseña",
                 placeholder = "Mínimo 8 caracteres",
                 keyboardType = KeyboardType.Password,
-                isPassword = true
+                isPassword = true,
+                passwordVisible = passwordVisible,
+                onPasswordToggleClick = { passwordVisible = !passwordVisible }
             )
             Spacer(Modifier.height(16.dp))
             CustomAuthTextField(
@@ -119,11 +122,13 @@ fun RegisterWorkerScreen(navController: NavController) {
                 label = "Confirmar Contraseña",
                 placeholder = "Repite tu contraseña",
                 keyboardType = KeyboardType.Password,
-                isPassword = true
+                isPassword = true,
+                passwordVisible = confirmPasswordVisible,
+                onPasswordToggleClick = { confirmPasswordVisible = !confirmPasswordVisible }
             )
             Spacer(Modifier.height(16.dp))
 
-            // --- Dropdown de Oficio Principal ---
+
             ExposedDropdownMenuBox(
                 expanded = professionExpanded,
                 onExpandedChange = { professionExpanded = !professionExpanded }
@@ -135,7 +140,7 @@ fun RegisterWorkerScreen(navController: NavController) {
                     label = { Text("Oficio Principal") },
                     placeholder = { Text("Selecciona tu oficio principal", color = TextGray) },
                     trailingIcon = {
-                        Icon(Icons.Default.ExpandMore, contentDescription = null, tint = TextGray) // <-- ¡¡CORREGIDO!!
+                        Icon(Icons.Default.ExpandMore, contentDescription = null, tint = TextGray)
                     },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         unfocusedBorderColor = CardBorder,
@@ -143,7 +148,7 @@ fun RegisterWorkerScreen(navController: NavController) {
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .menuAnchor(),
+                        .menuAnchor(), // <-- Importante para el dropdown
                     shape = RoundedCornerShape(16.dp)
                 )
                 ExposedDropdownMenu(
@@ -162,11 +167,14 @@ fun RegisterWorkerScreen(navController: NavController) {
                 }
             }
 
-            Spacer(Modifier.weight(1f))
+
+            Spacer(Modifier.height(32.dp))
 
             Button(
                 onClick = { /* TODO: Lógica de registro simulada */ },
-                modifier = Modifier.fillMaxWidth().height(56.dp).padding(top = 32.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryCyan), // Color oscuro
                 shape = RoundedCornerShape(16.dp),
                 enabled = !isLoading
@@ -184,42 +192,14 @@ fun RegisterWorkerScreen(navController: NavController) {
                     color = TextLink,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable { navController.navigate(Screen.Login.route) }
+                    modifier = Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = { navController.navigate(Screen.Login.route) }
+                    )
                 )
             }
-            Spacer(Modifier.height(64.dp)) // Más espacio al final
+            Spacer(Modifier.height(64.dp))
         }
     }
-}
-
-// Reutilizamos el Composable de RegisterClientScreen
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun CustomAuthTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    placeholder: String,
-    keyboardType: KeyboardType = KeyboardType.Text,
-    isPassword: Boolean = false
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        placeholder = { Text(placeholder, color = TextGray) },
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
-        trailingIcon = {
-            if (isPassword) {
-                Icon(Icons.Default.Lock, contentDescription = null, tint = TextGray) // <-- ¡¡CORREGIDO!!
-            }
-        },
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            unfocusedBorderColor = CardBorder,
-            focusedBorderColor = PrimaryCyan
-        )
-    )
 }

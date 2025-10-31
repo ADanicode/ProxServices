@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource // <-- 1. IMPORTAR
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -91,14 +92,20 @@ fun ForgotPasswordScreen(navController: NavController) {
                 color = TextLink,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.clickable { /* TODO: Lógica de reenviar código */ }
+                modifier = Modifier.clickable(
+                    interactionSource = remember { MutableInteractionSource() }, // <-- 2. APLICAR CORRECCIÓN
+                    indication = null, // <-- 3. APLICAR CORRECCIÓN
+                    onClick = { /* TODO: Lógica de reenviar código */ }
+                )
             )
 
             Spacer(Modifier.weight(1f)) // Espacio flexible
 
             Button(
                 onClick = { /* TODO: Lógica de verificar código */ },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryCyan),
                 shape = RoundedCornerShape(16.dp),
                 enabled = !isLoading && otpCode.length == 6
