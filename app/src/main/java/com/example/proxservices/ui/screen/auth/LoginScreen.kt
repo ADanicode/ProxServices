@@ -1,4 +1,5 @@
 package com.example.proxservices.ui.screen.auth
+
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -31,6 +32,7 @@ import com.example.proxservices.R
 import com.example.proxservices.ui.components.InfoTagsRow
 import com.example.proxservices.ui.navigation.Screen
 import com.example.proxservices.ui.theme.*
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
@@ -39,15 +41,28 @@ fun LoginScreen(
 ) {
     val uiState = viewModel.uiState
     val context = LocalContext.current
-    var passwordVisible by remember { mutableStateOf(false) }
-    LaunchedEffect(uiState.loginSuccess) {
-        if (uiState.loginSuccess) {
+    var passwordVisible by remember { mutableStateOf(false) } // <-- Estado para el icono
+
+    // --- Lógica para manejar eventos ---
+    // CORRECCIÓN: Escucha 'loggedInUserId' en lugar de 'loginSuccess'
+    LaunchedEffect(uiState.loggedInUserId) {
+        uiState.loggedInUserId?.let { userId ->
+
+            // CORRECCIÓN: Construye la ruta usando la función 'createRoute'
+            // Decide a qué dashboard navegar basado en el ID simulado
+            val destination = if (userId.startsWith("user_client")) {
+                Screen.ClientDashboard.createRoute(userId)
+            } else {
+                Screen.WorkerDashboard.createRoute(userId)
+            }
+
             // Navegamos al dashboard y limpiamos la pila de atrás
-            navController.navigate(Screen.ClientDashboard.route) {
+            navController.navigate(destination) {
                 popUpTo(Screen.Welcome.route) { inclusive = true }
             }
         }
     }
+
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -97,7 +112,7 @@ fun LoginScreen(
             )
             Spacer(Modifier.height(32.dp))
 
-
+            // Campo de Correo Electrónico
             OutlinedTextField(
                 value = uiState.email,
                 onValueChange = viewModel::onEmailChange,
@@ -109,13 +124,17 @@ fun LoginScreen(
                 isError = uiState.errorMessage != null,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     unfocusedBorderColor = CardBorder,
-                    focusedBorderColor = PrimaryCyan
+                    focusedBorderColor = PrimaryCyan,
+                    containerColor = TextFieldBackground,
+                    focusedTextColor = TextBlack,
+                    unfocusedTextColor = TextBlack,
+                    cursorColor = PrimaryCyan
                 )
             )
 
             Spacer(Modifier.height(16.dp))
 
-
+            // Campo de Contraseña (ACTUALIZADO con icono de ojo)
             OutlinedTextField(
                 value = uiState.password,
                 onValueChange = viewModel::onPasswordChange,
@@ -137,7 +156,11 @@ fun LoginScreen(
                 isError = uiState.errorMessage != null,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     unfocusedBorderColor = CardBorder,
-                    focusedBorderColor = PrimaryCyan
+                    focusedBorderColor = PrimaryCyan,
+                    containerColor = TextFieldBackground,
+                    focusedTextColor = TextBlack,
+                    unfocusedTextColor = TextBlack,
+                    cursorColor = PrimaryCyan
                 )
             )
 
@@ -152,7 +175,7 @@ fun LoginScreen(
                     .align(Alignment.End)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
+                        indication = null, // <-- ARREGLO DEL CRASH
                         onClick = { navController.navigate(Screen.ForgotPassword.route) }
                     )
             )
@@ -185,7 +208,7 @@ fun LoginScreen(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
+                        indication = null, // <-- ARREGLO DEL CRASH
                         onClick = { navController.navigate(Screen.RegisterClient.route) }
                     )
                 )
