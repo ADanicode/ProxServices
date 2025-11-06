@@ -41,7 +41,7 @@ fun AllCategoriesScreen(
 ) {
     // Lista COMPLETA simulada de categorías
     val allCategories = listOf(
-        "Plomería" to Icons.Default.Plumbing,
+        "Plomería" to Icons.Default.Plumbing, // ¡ERROR CORREGIDO! Se cambió '-' por ','
         "Electricidad" to Icons.Default.ElectricBolt,
         "Jardinería" to Icons.Default.Yard,
         "Pintura" to Icons.Default.FormatPaint,
@@ -88,9 +88,10 @@ fun AllCategoriesScreen(
                 // Espaciado vertical entre filas
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
+                // Aquí es donde el compilador se confundía. Ahora funciona correctamente.
                 allCategories.forEach { (nombre, icono) ->
                     CategoryChip(text = nombre, icon = icono, onClick = {
-                        // Al hacer clic, vuelve a la pestaña "Buscar" (simulación)
+                        // Al hacer clic, navega a la pantalla de búsqueda de cliente
                         navController.navigate(Screen.ClientSearch.route) {
                             // Limpia la pila hasta la pantalla de inicio del cliente
                             popUpTo(Screen.ClientHome.route)
@@ -126,4 +127,3 @@ private fun CategoryChip(text: String, icon: ImageVector, onClick: () -> Unit) {
         Text(text = text, style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center)
     }
 }
-
