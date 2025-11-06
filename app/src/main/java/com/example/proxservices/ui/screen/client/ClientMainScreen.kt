@@ -21,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.proto.ui.screen.jobs.BusquedaScreen
 import com.example.proxservices.data.repository.AuthRepository
 import com.example.proxservices.ui.navigation.Screen
 import com.example.proxservices.ui.theme.PrimaryCyan
@@ -103,12 +104,12 @@ fun ClientMainScreen(
 
                 // --- Pestaña 2: Buscar ---
                 composable(route = ClientBottomBarScreen.Search.route) {
-                    SearchScreen(navController = internalNavController)
+                    BusquedaScreen(navController = internalNavController)
                 }
 
                 // --- Pestaña 3: Servicios ---
                 composable(route = ClientBottomBarScreen.Services.route) {
-                    ServicesScreen(navController = internalNavController)
+                    ServicesSceen(navController = internalNavController)
                 }
 
                 // --- Pestaña 4: Lista de Chats ---
