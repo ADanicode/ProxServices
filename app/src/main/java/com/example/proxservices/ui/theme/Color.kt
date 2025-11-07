@@ -1,6 +1,8 @@
 package com.example.proxservices.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.BorderStroke // AGREGAR ESTA LÍNEA
+import androidx.compose.ui.unit.dp // AGREGAR ESTA LÍNEA
 
 // Paleta de colores basada en tu nuevo Figma (Tema Claro)
 
@@ -22,3 +24,10 @@ val TextFieldBackground = Color(0xFFF2F2F7) // <-- ¡LA LÍNEA QUE FALTABA!
 val TagBlue = Color(0xFF007BFF)
 val TagGreen = Color(0xFF34C759) // Para el chat "en línea"
 
+// --- NUEVOS COLORES PARA EL FLUJO DE TRABAJADOR (WORKERi) ---
+// Agregados para el Dashboard y Editar Perfil
+val PrimaryPurple = Color(0xFF5A55FF) // Color del botón de Billetera
+val StarYellow = Color(0xFFFFC107) // Color estándar para las estrellas de reputación
+// -------------------------------------------------------------
+// --- AGREGADO PARA RESOLVER EL ERROR EN WORKERDASHBOARDSCREEN ---
+val CardBorderStroke = BorderStroke(1.dp, CardBorder) // Usa tu CardBorder existente como Color

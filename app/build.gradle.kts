@@ -71,12 +71,18 @@ dependencies {
     // 2. ViewModels en Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3")
 
+    // >>> AGREGADA PARA RESOLVER 'liveData.observeAsState' <<<
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.8")
+    // >>> FIN DE LA ADICIÓN <<<
+
     // 3. Splash Screen API
     implementation("androidx.core:core-splashscreen:1.0.1")
 
     // 4. Iconos extendidos (para el ojo de "Visibility")
     implementation("androidx.compose.material:material-icons-extended")
     implementation(libs.androidx.compose.foundation)
+
+
 
     // ---- Dependencias de Pruebas (ya deberían estar) ----
     testImplementation("junit:junit:4.13.2")

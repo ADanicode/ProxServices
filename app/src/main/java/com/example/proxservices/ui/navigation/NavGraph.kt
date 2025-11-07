@@ -1,5 +1,9 @@
 package com.example.proxservices.ui.navigation
 
+import com.example.proxservices.ui.screen.workeri.EditProfileScreen
+import com.example.proxservices.ui.screen.workeri.WorkerNotificationsScreen
+import com.example.proxservices.ui.screen.workeri.RateClientScreen
+import com.example.proxservices.ui.screen.workeri.WorkerDashboardScreen
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
@@ -20,6 +24,7 @@ import com.example.proxservices.ui.screen.auth.RegisterWorkerScreen
 import com.example.proxservices.ui.screen.client.ClientMainScreen
 import com.example.proxservices.ui.screen.welcome.WelcomeScreen
 import com.example.proxservices.ui.screen.worker.WorkerMainScreen
+
 
 @Composable
 fun AppNavGraph(

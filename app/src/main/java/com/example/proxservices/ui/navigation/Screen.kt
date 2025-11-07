@@ -19,13 +19,10 @@ sealed class Screen(val route: String) {
 
     // 1. El "Contenedor" Principal (Recibe userId)
     object ClientDashboard : Screen("client_dashboard_screen/{userId}") {
-        // La plantilla de la ruta que espera el NavGraph
         val routeWithArgs = "client_dashboard_screen/{userId}"
-        // La definición del argumento que espera
         val arguments = listOf(
             navArgument("userId") { type = NavType.StringType }
         )
-        // Función para construir la ruta al navegar (ej. "client_dashboard_screen/user-123")
         fun createRoute(userId: String) = "client_dashboard_screen/$userId"
     }
 
@@ -39,13 +36,10 @@ sealed class Screen(val route: String) {
     object AllCategories : Screen("all_categories_screen")
 
     object ClientChatDetail : Screen("client_chat_detail/{contactName}") {
-        // La plantilla de la ruta
         val routeWithArgs = "client_chat_detail/{contactName}"
-        // La definición del argumento
         val arguments = listOf(
             navArgument("contactName") { type = NavType.StringType }
         )
-        // Función para construir la ruta (ej. "client_chat_detail/Juan Pérez")
         fun createRoute(contactName: String) = "client_chat_detail/$contactName"
     }
 
@@ -53,13 +47,10 @@ sealed class Screen(val route: String) {
 
     // 1. El "Contenedor" Principal (Recibe userId)
     object WorkerDashboard : Screen("worker_dashboard_screen/{userId}") {
-        // La plantilla de la ruta
         val routeWithArgs = "worker_dashboard_screen/{userId}"
-        // La definición del argumento
         val arguments = listOf(
             navArgument("userId") { type = NavType.StringType }
         )
-        // Función para construir la ruta
         fun createRoute(userId: String) = "worker_dashboard_screen/$userId"
     }
 
@@ -69,6 +60,18 @@ sealed class Screen(val route: String) {
     object WorkerWallet : Screen("worker_wallet")
     object WorkerChat : Screen("worker_chat")
 
-    // (Aquí irían futuras sub-pantallas del trabajador)
-}
+    // --- Sub-pantallas del Trabajador (Ismael) ---
+    object WorkerEditProfile : Screen("worker_edit_profile_screen") // Creador: Ismael
+    object WorkerNotifications : Screen("worker_notifications_screen") // Creador: Ismael
 
+    object RateClient : Screen("rate_client_screen/{jobId}") { // Creador: Ismael
+        val routeWithArgs = "rate_client_screen/{jobId}"
+        val arguments = listOf(
+            navArgument("jobId") { type = NavType.StringType }
+        )
+        fun createRoute(jobId: String) = "rate_client_screen/$jobId"
+    }
+
+    // --- Sub-pantallas Compartidas (Cliente y Trabajador) ---
+    object EditProfile : Screen("edit_profile_screen") // Creador: Ismael
+}
