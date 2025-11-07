@@ -1,5 +1,6 @@
 package com.example.proxservices.ui.screen.workeri
 
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.proxservices.data.repository.AuthRepository
 import com.example.proxservices.ui.navigation.Screen
 import com.example.proxservices.ui.theme.BackgroundLight
 import com.example.proxservices.ui.theme.CardBorder
@@ -45,9 +47,13 @@ import com.example.proxservices.ui.theme.TextGray
 @Composable
 fun WorkerDashboardScreen(
     navController: NavController,
-    viewModel: WorkerViewModel = viewModel()
+    userId: String,
+    authRepository: AuthRepository
 ) {
-    // Observa el estado de disponibilidad del ViewModel
+    val viewModel: WorkerViewModel = viewModel(
+        factory = WorkerViewModel.Factory(userId, authRepository)
+    )
+
     val isAvailable by viewModel.isAvailable.observeAsState(initial = true)
     val profile by viewModel.profile.observeAsState(initial = WorkerProfile())
 
@@ -68,10 +74,14 @@ fun WorkerDashboardScreen(
             item { Spacer(modifier = Modifier.height(24.dp)) }
             item { ReputationSection(rating = profile.reputation, reviews = profile.totalReviews) }
             item { Spacer(modifier = Modifier.height(24.dp)) }
+
             item { QuickAccessSection(navController = navController) }
+
             item { Spacer(modifier = Modifier.height(24.dp)) }
             item { RecentActivitySection() }
-            item { Spacer(modifier = Modifier.height(32.dp)) } // Espacio final
+            item { Spacer(modifier = Modifier.height(32.dp)) }
+
+
         }
     }
 }
@@ -253,13 +263,16 @@ fun QuickAccessSection(navController: NavController) {
             color = TextBlack
         )
         Spacer(Modifier.height(12.dp))
+
         QuickAccessItem(
             icon = Icons.Filled.Person,
             title = "Editar Perfil",
             subtitle = "Actualizar información y portafolio",
             onClick = { navController.navigate(Screen.EditProfile.route) } // Conexión a EditProfileScreen
         )
+
         Divider(color = CardBorder, thickness = 1.dp, modifier = Modifier.padding(horizontal = 4.dp))
+
         QuickAccessItem(
             icon = Icons.Filled.Task,
             title = "Servicios Pendientes",
@@ -365,12 +378,8 @@ fun RecentActivitySection() {
 
 
 // Items para la barra de navegación inferior
-sealed class WorkerNavItem(val route: String, val icon: ImageVector, val label: String) {
-    data object Home : WorkerNavItem("worker_home", Icons.Filled.Home, "Inicio")
-    data object Jobs : WorkerNavItem("worker_jobs", Icons.Filled.Task, "Trabajos")
-    data object Wallet : WorkerNavItem("worker_wallet", Icons.Filled.Wallet, "Billetera")
-    data object Chat : WorkerNavItem("worker_chat", Icons.Filled.Message, "Chat")
-}
+
+
 
 @Composable
 fun WorkerBottomNavigationBar(navController: NavController) {
@@ -403,6 +412,7 @@ fun WorkerBottomNavigationBar(navController: NavController) {
                     unselectedIconColor = TextGray,
                     unselectedTextColor = TextGray
                 )
+
             )
         }
     }

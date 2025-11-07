@@ -1,54 +1,54 @@
 package com.example.proxservices.ui.screen.workeri
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import com.example.proxservices.data.repository.AuthRepository
+import kotlinx.coroutines.launch
 
-// Data class para simular los datos del perfil y la billetera del trabajador (WORKER DASHBOARD - FIGMA)
 data class WorkerProfile(
-    val name: String = "Juan Pérez",
-    val title: String = "Plomero Profesional",
-    val isAvailable: Boolean = true, // Estado inicial
-    val walletBalance: Double = 1250.75, // Saldo inicial
-    val reputation: Double = 4.8,
-    val totalReviews: Int = 127
+    val name: String = "",
+    val title: String = "Especialista",
+    val walletBalance: Double = 0.0,
+    val reputation: Double = 4.5,
+    val totalReviews: Int = 12
 )
 
-class WorkerViewModel : ViewModel() {
-    // LiveData para manejar el estado del perfil y notificar a la UI
+class WorkerViewModel(
+    private val userId: String,
+    private val authRepository: AuthRepository
+) : ViewModel() {
+
+    private val _isAvailable = MutableLiveData(true)
+    val isAvailable: LiveData<Boolean> = _isAvailable
+
     private val _profile = MutableLiveData(WorkerProfile())
     val profile: LiveData<WorkerProfile> = _profile
 
-    // LiveData para manejar el estado de disponibilidad del trabajador
-    private val _isAvailable = MutableLiveData(_profile.value?.isAvailable ?: true)
-    val isAvailable: LiveData<Boolean> = _isAvailable
-
-    /**
-     * Alterna el estado de disponibilidad (Disponible/No Disponible)
-     * y actualiza el LiveData del perfil.
-     */
-    fun toggleAvailability(available: Boolean) {
-        _isAvailable.value = available
-        _profile.value = _profile.value?.copy(isAvailable = available)
+    init {
+        loadProfile()
     }
 
-    // --- Funcionalidades futuras para el Dashboard ---
+    fun toggleAvailability(value: Boolean) {
+        _isAvailable.value = value
+    }
 
-    /**
-     * Simula la navegación a la pantalla de historial de transacciones.
-     */
     fun viewWalletHistory() {
-        // Lógica de navegación o API call para historial aquí.
-        println("Navegar a Historial de Billetera...")
+        // Aquí podrías navegar o mostrar historial
     }
 
-    /**
-     * Simula la navegación a la pantalla de edición de perfil.
-     */
-    fun editProfile() {
-        // Lógica de navegación aquí.
-        println("Navegar a Editar Perfil...")
+    private fun loadProfile() {
+        viewModelScope.launch {
+            val result = authRepository.getUserName(userId)
+            val name = result.getOrElse { "Trabajador Anónimo" }
+            _profile.value = WorkerProfile(name = name)
+        }
     }
 
-    // Nota: El manejo de Servicios Pendientes (3 solicitudes por revisar) será lógica de Firestore.
+    class Factory(
+        private val userId: String,
+        private val authRepository: AuthRepository
+    ) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return WorkerViewModel(userId, authRepository) as T
+        }
+    }
 }
