@@ -22,3 +22,21 @@ val TextFieldBackground = Color(0xFFF2F2F7) // <-- ¡LA LÍNEA QUE FALTABA!
 val TagBlue = Color(0xFF007BFF)
 val TagGreen = Color(0xFF34C759) // Para el chat "en línea"
 
+// 📁 com.example.proxservices.ui.theme.Color.kt (Añadir al final del archivo)
+
+// Colores para la funcionalidad de la Cartera
+val PrimaryBlue = PrimaryCyan // Usaremos Cyan como nuestro PrimaryBlue
+val DarkBlueText = Color(0xFF1F414F) // Azul Oscuro (para saldos principales)
+val ScreenBackground = BackgroundLight // Usaremos BackgroundLight como fondo
+val TextPrimary = TextBlack // Usaremos TextBlack como TextPrimary
+val TextSecondary = TextGray // Usaremos TextGray como TextSecondary
+
+val DarkPurple = Color(0xFF512DA8) // Morado oscuro para el indicador de pestañas
+
+// Colores específicos para Historial y UI
+val PointsPositive = PrimaryCyan // Cian para ganancias
+val PointsNegative = Color(0xFFEB5757) // Rojo para gastos/restas
+val DividerColor = Color(0xFFDEDEE0) // Gris suave
+val StarColor = Color(0xFFFFC107) // Color para estrellas
+val White = Color(0xFFFFFFFF)
+
